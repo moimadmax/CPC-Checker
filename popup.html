@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+    <title>Forum CanardPC</title>
+    <style type="text/css">
+      body {
+        font-family: "Tahoma", "Calibri", "Verdana", "Geneva", sans-serif;
+        font-style: normal;
+        font-size: 0.8em;
+        width: 400px;
+        min-height: 150px;
+      }
+      a {
+        color: rgb(136, 0, 0);
+        text-decoration: none;
+      }
+      a :hover{
+        color: rgb(204, 0, 0);
+        text-decoration: underline;
+      }
+      h1 a{
+        color: rgb(62, 62, 62);
+        text-decoration: none;
+      }
+
+      h1 {
+        color: rgb(62, 62, 62);
+        font-size: 1.5em;
+        text-align: center;
+      }
+
+      h2 {
+        color: rgb(62, 62, 62);
+        font-size: 1.2em;
+      }
+      div > h2 {
+        display: -webkit-flex;
+      }
+
+      div > h2:after {
+        -webkit-flex: auto;
+        background-image: linear-gradient(rgb(190, 190, 190), transparent 1px);
+        background-position: left 55%;
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        content: '';
+        margin-left: 10px;
+      }
+
+
+      h3 {
+        color: rgb(62, 62, 62);
+        margin-bottom: 5px;
+        font-size: 1em;
+        font-weight: normal;
+        font-style: italic;
+      }
+
+      ul {
+        padding-left: 0px;
+        margin: 0px;
+      }
+
+      #links li{
+        list-style: none;
+      }
+      #bpPanel{
+        padding-top:10px;
+      }
+      
+      #bpRefresh{
+        position:absolute; 
+        top:10px; 
+        right:10px;
+      }
+      input[type=checkbox]{
+        width: 10px;
+        height: 10px;
+        margin-left: 0px;
+        margin-right: 5px;
+        visibility: hidden;
+      }
+      input[type=checkbox]:before {
+        visibility: visible;
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-bottom: 4px;
+        background: url('/images/popup/favn.png'); 
+      }
+      input[type=checkbox]:checked:before {
+        background: url('/images/popup/favo.png'); 
+      }
+
+      #links a:only-child:before{
+        visibility: visible;
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+        background: url('/images/popup/favn.png'); 
+
+      }
+
+      .bookmark {
+        display: inline-block;
+        padding: 0px 5px;
+      }
+
+      #canard{
+        background-image: url('images/popup/canard.png');
+        width: 150px;
+        height: 170px;
+        position:absolute; 
+        bottom: 0px;
+        right: 0px;
+        z-index: -1;
+      }
+
+      
+    </style>  
+  </head>
+  <body>
+    <div id="canard"></div>
+    <div id="title"></div>
+    <div id="linksTitle"></div>
+    <div id="links"></div>
+    <div id="bpPanel"></div>
+    <div id="bookmarksTitle"></div>
+    <div id="bookmarks"></div>
+    <div id="addToBookmarks"></div>
+    <script src="scripts/popup.js"></script>
+    <script src="scripts/favoris.js"></script>
+  </body>
+</html>

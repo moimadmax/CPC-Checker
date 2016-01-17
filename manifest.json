@@ -1,0 +1,37 @@
+﻿{
+  "manifest_version" : 2,
+
+  "name": "CPC Checker",
+  "version" : "3.4",
+  "developer": {"name" : "moimadmax", "url" : ""},
+  "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC (http://forum.canardpc.com/).",
+
+  "icons": { 
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png" 
+  },
+
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "19": "images/badge19/snif.png",
+      "38": "images/badge38/snif.png"
+    },
+    "default_title": "CPC Checker",
+    "default_popup": "popup.html"
+  },
+  
+  "options_page" : "options.html",
+  
+  "permissions" : [
+    "http://forum.canardpc.com/*", 
+    "http://cpc.tb.cx/*", 
+    "alarms",
+    "tabs"
+  ]
+}
