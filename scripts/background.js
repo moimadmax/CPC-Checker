@@ -1,4 +1,4 @@
-﻿var ls = localStorage; 
+﻿var ls = localStorage;
 var requestTimeout = 1000 * 6;
 var readAllHash;
 var usercpUrl = {
@@ -12,6 +12,7 @@ function install(){
   ls.update = ls.update || 5;
   ls.popup = ls.popup || 1;
   ls.bookmarksEnabled = ls.bookmarksEnabled || 1;
+  ls.searchEnabled = ls.searchEnabled || 1;
   ls.cache = ls.cache || '';
   ls.bookmarksContent = ls.bookmarksContent || '{"bookmarks":[], "lastUpdated":0}';
   ls.persistentStorage = ls.persistentStorage || '{}';
@@ -176,7 +177,7 @@ function extractLinks(page, quantity){
     threads.push({url:ls.accesUrl + htmlDecode(result[1]) + '?goto=newpost', text:htmlDecode(result[2])});
   }
   return {messages:messages, threads:threads, quantity:quantity, readAllHash:readAllHash};
-} 
+}
 
 // Persistant storage
 var ps = {
@@ -188,7 +189,7 @@ var ps = {
       }catch(e){}
     }
     this.db[key] = value;
-    ls.persistentStorage = JSON.stringify(this.db);        
+    ls.persistentStorage = JSON.stringify(this.db);
   },
 
   get: function(key){
@@ -224,7 +225,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 });
 
 // Alarme déclencheuse de refresh
-chrome.alarms.onAlarm.addListener(onAlarm); 
+chrome.alarms.onAlarm.addListener(onAlarm);
 chrome.runtime.onConnect.addListener(function(port) {
   if(port.name == 'popup'){
     port.onDisconnect.addListener(function(){
@@ -232,7 +233,7 @@ chrome.runtime.onConnect.addListener(function(port) {
     });
     port.onMessage.addListener(function(request) {
       switch(request.action){
-        case 'PopupOpen': 
+        case 'PopupOpen':
           port.postMessage(extractLinks(ls.cache, {nbThread:ps.get('nbThread'), nbMsg:ps.get('nbMsg')}));
           break;
         case 'PopupRefresh':

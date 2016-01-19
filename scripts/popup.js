@@ -1,5 +1,5 @@
 ﻿// chrome-extension://alndamfaadhijaekjanbahdedcglacef/popup.html
-var ls = localStorage; 
+var ls = localStorage;
 var datas;
 var divTitle;
 var divLinksTitle;
@@ -7,16 +7,18 @@ var divLinks;
 var divBpPanel;
 var divBookmarks;
 var divBookmarksTitle;
+var divSearch;
 
 //
 //  Creation des éléments.
 //
 
-// Titre
+// Titres
 var title = document.createElement('h1');
 title.innerHTML = '<a href="' + ls.accesUrl + 'usercp.php" target="_blank" title="Lien vers le tableau de bord">Tableau de bord</a>';
 var linksTitle = createElm('h2', 'Nouveautés');
 var bookmarksTitle = createElm('h2', 'Favoris');
+var searchTitle = createElm('h2', 'Recherche');
 
 // Bouton Refresh
 var bpRefresh = document.createElement('div');
@@ -64,7 +66,9 @@ function init(){
   divBpPanel = document.getElementById('bpPanel');
   divBookmarks = document.getElementById('bookmarks');
   divBookmarksTitle = document.getElementById('bookmarksTitle');
- 
+  divSearchTitle = document.getElementById('searchTitle');
+  divSearch = document.getElementById('search');
+
   // Ajout du titre et bouton refresh
   divTitle.appendChild(title);
   divTitle.appendChild(bpRefresh);
@@ -72,7 +76,7 @@ function init(){
   divLinksTitle.appendChild(linksTitle);
   // Message d'attente. (normalement invisible car cache)
   divLinks.appendChild(loading);
-  
+
   if(ls.bookmarksEnabled == 1){
     favoris.load();
     // Affiche le titre des favoris
@@ -80,6 +84,12 @@ function init(){
     displayBookmarks();
     displayAddToBookmarks();
   }
+
+  if(ls.searchEnabled == 1){
+    divSearchTitle.appendChild(searchTitle);
+    displaySearch();
+  }
+
   // On demande les données du background.
   port.postMessage({action: 'PopupOpen'});
   // Elle seront traitée dans DataReceived
@@ -101,7 +111,7 @@ function dataReceived(response) {
   // On enlève le loading ... et on mets le contenu
   divLinks.removeChild(loading);
   divLinks.appendChild(content);
- 
+
   // Ajout des bouton Ouvrir
   if(datas.messages.length && datas.threads.length){
     divBpPanel.appendChild(bpOpenAll);
@@ -229,8 +239,40 @@ function displayAddToBookmarks(){
       divAddToBookmarks.appendChild(titre);
       divAddToBookmarks.appendChild(cb);
       divAddToBookmarks.appendChild(link);
-    }    
+    }
   });
+}
+
+function displaySearch(){
+  var textBox = document.createElement('input');
+  textBox.type = 'text';
+  textBox.name = 'request';
+  textBox.addEventListener('keypress', function(e){
+    var key = e.which || e.keyCode;
+    if (key === 13) { // 13 = enter
+      // Build URL
+      openSearch(textBox.value);
+    }
+  });
+  divSearch.appendChild(textBox);
+}
+
+function openSearch(request){
+  var engine = '';
+  switch (ls.searchEngine) {
+    default:
+    case 'DuckDuckGo':
+      engine = 'https://duckduckgo.com/?q=site%3Aforum.canardpc.com+';
+      break;
+    case 'Qwant':
+      engine = 'https://www.qwant.com/?q=site%3Aforum.canardpc.com+';
+      break;
+    case 'Google':
+      engine = 'https://www.google.fr/search?q=site:forum.canardpc.com+';
+      break;
+  }
+  request = request.replace(/ /g, "+");
+  chrome.tabs.create({url: engine + request, active: true});
 }
 
 function createElm(type, text, url){

@@ -21,10 +21,10 @@
       document.getElementById('bmTestResult').innerHTML = "Valide";
       document.getElementById('saveBookmark').disabled = false;
     } else {
-      document.getElementById('bmTestResult').innerHTML = "Invalide";      
+      document.getElementById('bmTestResult').innerHTML = "Invalide";
       document.getElementById('saveBookmark').disabled = true;
     }
-    
+
   }, false);
   document.getElementById('saveBookmark').addEventListener('click',function(e){
     localStorage.bookmarksContent = document.getElementById('bookmarksContent').value;
@@ -66,7 +66,7 @@ function IsJson(str) {
 // Fonction d'ecoute et modification des réglages
 function initPref()
 {
-    
+
     // storage
     var storage = localStorage;
 

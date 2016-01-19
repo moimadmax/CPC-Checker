@@ -57,7 +57,7 @@ var favoris = {
   // Crée un nom unique 
   createName:function(url){
     url = decodeURIComponent(url);
-    var regex =/(?:-([^-?]+))/g; 
+    var regex =/(?:-([^-\/?]+))/g; 
     var ret = '';
     var fallback = '';
     while(result = regex.exec(url)) {
