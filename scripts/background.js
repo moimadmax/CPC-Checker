@@ -9,6 +9,7 @@ var usercpUrl = {
 // Initialisation des variables
 function install(){
   ls.accesUrl = ls.accesUrl || usercpUrl['cpc'];
+  ls.zoom = ls.zoom || 100;
   ls.update = ls.update || 5;
   ls.popup = ls.popup || 1;
   ls.bookmarksEnabled = ls.bookmarksEnabled || 1;

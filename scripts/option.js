@@ -8,8 +8,14 @@
 
   // Etiquette du Slider de durée de rafraichissement.
   document.getElementById('updMin').innerHTML = localStorage.update;
-  document.getElementById('update').addEventListener('change',function(e){
+  document.getElementById('update').addEventListener('input',function(e){
     document.getElementById('updMin').innerHTML = e.currentTarget.value;
+  }, false);
+
+  // Etiquette du Slider de taille de police.
+  document.getElementById('updZoom').innerHTML = localStorage.zoom;
+  document.getElementById('zoom').addEventListener('input',function(e){
+    document.getElementById('updZoom').innerHTML = e.currentTarget.value;
   }, false);
 
   // Gestion des Bookmarks

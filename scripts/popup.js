@@ -9,6 +9,7 @@ var divBookmarks;
 var divBookmarksTitle;
 var divSearch;
 
+document.body.parentElement.style.zoom = ls.zoom + "%";
 //
 //  Creation des éléments.
 //
