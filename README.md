@@ -13,7 +13,12 @@ Cette extension:
 - Permet d'ouvrir toutes les notifications d'un clic.
 - Permet de garder à portée de clic vos discussions préférées.
 - Offre un champ de recherche direct avec les moteurs DuckDuckGo, Qwant et Google au choix.
+<<<<<<< HEAD
 - Permet de masquer les posts des utilisateurs ignorés.
 Autorisations :
+=======
+
+# Autorisations :
+>>>>>>> 3b80f1756da08e20c5bff77f126bf16f5b4c1d6e
 - Alarms : Utilisé afin de rafraichir l'extension toutes les x minutes
 - Tabs : Utilisé pour connaitre au dessus de quel onglet actif s'ouvre le popup pour le système de favoris.
