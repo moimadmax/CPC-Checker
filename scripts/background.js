@@ -248,6 +248,9 @@ chrome.runtime.onConnect.addListener(function(port) {
       init();
     });
   }
+  if(port.name == 'contentScript'){
+    port.postMessage({hideIgnoredPost:ls.hideIgnoredPost});
+  }
  });
 //
 // Là ou tout commence.
