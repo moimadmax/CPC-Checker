@@ -1,6 +1,6 @@
 ﻿function init(){
   // ajout des listener sur le menu
-  var menuItems = document.querySelectorAll('#sidebar-menu li');
+  var menuItems = document.querySelectorAll('#tabs-menu li');
   for (var i = 0, menuItem; menuItem = menuItems[i]; i++) {
     menuItem.addEventListener('click', showGroup);
   }
@@ -40,7 +40,7 @@
 function showGroup(e) {
   var groupName = e.currentTarget.dataset.target
   // Add 'selected' class name to the menu item that was clicked.
-  var menuItems = document.querySelectorAll('#sidebar-menu li');
+  var menuItems = document.querySelectorAll('#tabs-menu li');
   for (var i = 0, menuItem; menuItem = menuItems[i]; i++) {
     var show = menuItem.dataset.target == groupName;
     menuItem.classList.toggle('selected', show);

@@ -1,4 +1,3 @@
-var ls = localStorage;
 function dataReceived(data){
   if (data.hideIgnoredPost == "on"){
     //chrome.tabs.insertCSS({code:"#postlist .postbitignored {display: none !important;}");

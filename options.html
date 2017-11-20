@@ -4,189 +4,83 @@
     <meta charset="utf-8">
     <title>Cpc Checker Options</title>
     <style type="text/css">
-      html, body {
-        background-color: rgb(237, 237, 237);
-        font: menu;
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      body {
+        width: 600px;
+        height: 800px;
+        background-image: none;
+        background-size: cover;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(100%,#7db9e8));
       }
 
-      a {
-        color: rgb(136, 0, 0);
-        text-decoration: none;
-      }
-      a :hover{
-        color: rgb(204, 0, 0);
-        text-decoration: underline;
-      }
-      h1 a, h2{
-        color: rgb(62, 62, 62);
-        text-decoration: none;
-      }
-
-      p {
-        margin:0px;
-        padding:0px;
-      }
-
-      #legende > p {
+      #tool-container{
         margin:10px;
-        padding:0px;
-      }
-
-      #help > p {
-        text-indent: 30px;
       }
 
       #canard{
         background-image: url('images/option/canard.png');
         width: 300px;
         height: 340px;
-        position:absolute;
-        bottom: 10px;
-        left: 10px;
+        position:fixed;
+        bottom: 0px;
+        right: 10px;
+        z-index: -1;
       }
 
-      #wallpaper {
-        background-image: none;
-        background-size: cover;
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(100%,#7db9e8));
-        height: 100%;
-        left: 0;
-        overflow: auto;
-        position: absolute;
-        top: 0;
+
+      menu {
+        display: table;
+        font-size: 1.5em;
         width: 100%;
+        margin: 10px 0px;
+        padding: 0;
+        background: linear-gradient(white, lightGrey);
+        border-radius: 5px 5px 5px 5px;
       }
 
-      #tool-container {
-        bottom: 0;
-        left: 0;
-        margin: 0 auto;
-        min-width: 700px;
-        max-width: 900px;
-        padding: 0 20px;
-        position: absolute;
-        right: 0;
-        top: 0;
+      menu li {
+        display: table-cell;
+        text-align: center;
+        color: rgba(0, 0, 0, .7);
+        text-decoration: none;
+        padding: 10px 0px 10px 0px;
+        width:25%;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+        border: 1px solid rgba(0, 0, 0, 0.25);
       }
 
-      #sidebar {
-        -webkit-border-end: none;
-        background-color: rgba(255, 255, 255, 0.8);
-        background-origin: content-box;
-        background-repeat: no-repeat;
-        border-radius: 12px 0 0 12px;
-        border: 1px solid rgb(198, 198, 198);
-        -webkit-border-end: none;
-        box-sizing: border-box;
-        color: rgb(73, 73, 73);
-        margin-top: 30px;
-        padding: 20px;
-        position: fixed;
-        width: 230px;
+      menu li.selected {
+        font-weight: bold;
       }
 
-      #sidebar-icon {
+      menu li.selected::before{
         background-image: url('images/option/icon.png');
-      }
-
-      #sidebar-icon {
         display: block;
         width: 52px;
         height: 48px;
         background-repeat: no-repeat;
       }
 
-      #sidebar-menu {
-        color: rgb(112, 112, 112);
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 20px;
-        list-style-type: none;
-        padding: 0;
-        position: relative;
-      }
-
-      #sidebar h1 {
-        font-size: 18px;
-      }
-
-      #sidebar-menu li {
-        cursor: pointer;
-        padding: 5px 0;
-        position: relative;
-      }
-
-      #sidebar-menu li:hover {
-        color: black;
-      }
-
-      #sidebar-menu .selected {
-        cursor: default;
-        color: black;
-      }
-      #sidebar-menu .selected::after {
-        border-top: 1px solid rgba(0, 0, 0, .2);
-        border-left: 1px solid rgba(0, 0, 0, .2);
-        background: -webkit-linear-gradient(-45deg, rgb(255, 255, 255) 0%,
-         rgb(255, 255, 255) 60%,
-         transparent 60%,
-         transparent 100%);
-        background-clip: content-box;
-        height: 12px;
-        content: '';
-        display: block;
-        margin-top: -6px;
-        position: absolute;
-        top: 50%;
-        right: -26px;
-        width: 12px;
-        -webkit-transform: rotate(-45deg);
-        -webkit-transform-origin: 50% 50%;
-      }
-
       #content {
-        -webkit-margin-start: 230px;
         background: white;
+        opacity: 0.9;
         border-left: 1px solid rgba(0, 0, 0, 0.25);
         border-right: 1px solid rgba(0, 0, 0, 0.25);
         box-sizing: border-box;
         min-height: 100%;
         padding: 30px;
+        border-radius: 5px 5px 5px 5px;
       }
+</style>
 
-      #page-container {
-        box-sizing: border-box;
-      }
-
-      section > h3 {
-        -webkit-margin-start: -18px;
-        color: rgb(95, 95, 95);
-        display: -webkit-flex;
-        font-weight: normal;
-      }
-      section > h3:after {
-        -webkit-flex: auto;
-        background-image: linear-gradient(rgb(190, 190, 190), transparent 1px);
-        background-position: left 55%;
-        background-repeat: no-repeat;
-        background-size: 100% 1px;
-        content: '';
-        margin-left: 10px;
-      }
-    </style>
 
   </head>
 <body>
   <div id="wallpaper">
   <div id="canard"></div>
     <div id="tool-container">
-      <div id="sidebar">
-        <div id="sidebar-icon"></div>
-        <h1>Cpc Checker</h1>
-        <menu id="sidebar-menu">
+      <div id="tabs">
+        <div id="tabs-icon"></div>
+        <menu id="tabs-menu">
           <li data-target="help" class="selected">Aide</li>
           <li data-target="configuration">Configuration</li>
           <li data-target="bookmarks">Favoris</li>
@@ -200,23 +94,23 @@
               <section>
                 <h3>Légende</h3>
                 <div id="legende">
-                  <p><img src="images/option/snif.png"> : Vous n'êtes pas enregistré sur le forum / Ou erreur de connection.<br/></p>
+                  <p><img src="images/option/snif.png"> : Vous n'êtes pas enregistré sur le forum / Ou erreur de connexion.<br/></p>
                   <p><img src="images/option/baah.png"> : Vous êtes enregistré sur le forum mais il n'y a pas de nouveau message dans les discussions suivies ni de nouveau messages privé.<br/></p>
                   <p><img src="images/option/cool.png"> : Vous avez des nouveaux messages dans les discussions suivies.<br/></p>
                   <p><span style="background-color:rgba(0,4,211,1); color:white; border-radius: 1px; font-weight: bold;">&nbsp;2&nbsp;</span> : Indique le nombre de nouveau message privé.<br/></p>
                   <p><span style="background-color:rgba(211,0,4,1); color:white; border-radius: 1px; font-weight: bold;">&nbsp;2&nbsp;</span> : Indique le nombre de nouveau message dans les discussions suivies.<br/></p>
-                  <p><img src="images/option/favn.png"> : La discussion n'est pas dans les favoris, ou les favoris sont désactivés.<br/></p>
-                  <p><img src="images/option/favo.png"> : La discussion est dans les favoris.<br/></p>
+                  <p><div style="display: inline-block; width: 6px; height: 6px; background:#fff; border-radius:50%; border:2px solid #000;"></div> : La discussion n'est pas dans les favoris, ou les favoris sont désactivés.<br/></p>
+                  <p><div style="display: inline-block; width: 6px; height: 6px; background:#000; border-radius:50%; border:2px solid #000;"></div> : La discussion est dans les favoris.<br/></p>
                </div>
                 <h3>Favoris</h3>
                 <div id="help">
                   <h4>Fonctionnement</h4>
                   <p>
-                    Si activé dans les préférences, les favoris s'affiche sur le popop dans la section "Favoris". Les noms des favoris sont dérivés de leur URL (EnCNCpCOeF pour http://forum.canardpc.com/threads/56458-<b>E</b>xtensions-<b>n</b>avigateurs-<b>C</b>anardPC-<b>N</b>otifier-<b>C</b>hecker-<b>p</b>our-<b>C</b>hrome-<b>O</b>pera-<b>e</b>t-<b>F</b>irefox) cependant une info-bulle apparait en cas de survol du pointeur de souris.
+                    Si activé dans les préférences, les favoris s'affichent sur le popop dans la section "Favoris". Les noms des favoris sont dérivés de leur URL (EnCNCpCOeF pour http://forum.canardpc.com/threads/56458-<b>E</b>xtensions-<b>n</b>avigateurs-<b>C</b>anardPC-<b>N</b>otifier-<b>C</b>hecker-<b>p</b>our-<b>C</b>hrome-<b>O</b>pera-<b>e</b>t-<b>F</b>irefox) cependant une info-bulle apparaît en cas de survol du pointeur de souris.
                   </p>
                   <h4>Ajouter / enlever</h4>
                   <p>
-                    Pour ajouter ou enlever une discusion des favoris, il suffit de se rendre sur la page de la discussion, d'ouvrir le popup et de cliquer sur la puce dans la section "Ajouter/Enlever la page courante" qui apparaît en bas de popup. Il est aussi possible d'ajouter ou d'enlever les discussions qui apparaissent dans la section "nouveautés" en cliquant sur leur puces respectives.
+                    Pour ajouter ou enlever une discussion des favoris, il suffit de se rendre sur la page de la discussion, d'ouvrir le popup et de cliquer sur la puce dans la section "Ajouter/Enlever la page courante" qui apparaît en bas de popup. Il est aussi possible d'ajouter ou d'enlever les discussions qui apparaissent dans la section "nouveautés" en cliquant sur leur puces respectives.
                   </p>
                 </div>
               </section>

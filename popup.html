@@ -84,31 +84,33 @@
         width: 10px;
         height: 10px;
         margin-left: 0px;
+        margin-bottom: -1px;
         margin-right: 5px;
-        visibility: hidden;
+        background:#fff;
+        border-radius:50%;
+        border:2px solid #000;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
       }
-      input[type=checkbox]:before {
-        visibility: visible;
-        content: "";
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin-bottom: 4px;
-        background: url('/images/popup/favn.png');
-      }
-      input[type=checkbox]:checked:before {
-        background: url('/images/popup/favo.png');
+
+
+      input[type=checkbox]:checked {
+        background:#000;
       }
 
       #links a:only-child:before{
         visibility: visible;
         content: "";
         display: inline-block;
-        width: 10px;
-        height: 10px;
+        width: 6px;
+        height: 6px;
+        margin-left: 0px;
+        margin-bottom: -1px;
         margin-right: 5px;
-        background: url('/images/popup/favn.png');
-
+        background:#fff;
+        border-radius:50%;
+        border:2px solid #000;
       }
 
       .bookmark {

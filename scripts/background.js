@@ -34,15 +34,13 @@ function init(){
 
 // Ouvre le control panel dans un nouvel onglet
 function goToUsercp(){
-  chrome.tabs.getAllInWindow(undefined, function(tabs) {
-    for (var i = 0, tab; tab = tabs[i]; i++) {
-      if (tab.url && tab.url.indexOf(ls.accesUrl + 'usercp.php') == 0) {
-        chrome.tabs.update(tab.id, {selected: true});
-        chrome.tabs.reload(tab.id);
-        return;
-      }
+  chrome.tabs.query({url: ls.accesUrl + "usercp.php*"}, function(tabs) {
+    if(tabs.length){
+        chrome.tabs.reload(tabs[0].id);
+        chrome.tabs.update(tabs[0].id, {active: true});
+    } else {
+      chrome.tabs.create({url: ls.accesUrl + 'usercp.php'});
     }
-    chrome.tabs.create({url: ls.accesUrl + 'usercp.php'});
   });
 }
 
@@ -212,14 +210,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
       install();
       break;
     case 'update':
-      //patch pour la prochaine version, à supprimer.
-      if(ls.accesUrl.indexOf('usercp.php') != -1 ){
-        ls.accesUrl = ls.accesUrl.replace('usercp.php', '');
-      }
-      delete ls.acces;
-      install();
       break;
-    case 'chrome_update':
+    case 'browser_update':
       break;
   }
 });
