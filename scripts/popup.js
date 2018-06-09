@@ -147,7 +147,7 @@ function openThreads(){
 }
 
 function markAllRead(){
-  if(confirm('Est vous sûr de vouloir marquer tout les forums comme lus, cette action est irreversible.') == true){
+  if(confirm('Êtes-vous sûr de vouloir marquer tous les forums comme lus, cette action est irréversible.') == true){
     chrome.tabs.create({url: ls.accesUrl + 'forumdisplay.php?do=markread&markreadhash=' + datas.readAllHash })
   }
 }
