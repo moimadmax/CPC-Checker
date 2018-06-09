@@ -3,7 +3,7 @@
 
   "name": "CPC Checker",
   "version" : "3.6",
-  "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC (http://forum.canardpc.com/).",
+  "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC.",
 
   "icons": {
     "16": "images/icon16.png",
