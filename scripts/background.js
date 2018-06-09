@@ -16,6 +16,8 @@ function install(){
   ls.cache = ls.cache || '';
   ls.bookmarksContent = ls.bookmarksContent || '{"bookmarks":[], "lastUpdated":0}';
   ls.persistentStorage = ls.persistentStorage || '{}';
+  ls.hideIgnoredPost = ls.hideIgnoredPost || '';
+
 }
 
 // Initialisation de l'extension
