@@ -1,14 +1,11 @@
 ﻿var ls = localStorage;
 var requestTimeout = 1000 * 6;
 var readAllHash;
-var usercpUrl = {
-  'cpc' : 'http://forum.canardpc.com/',
-  'x86' : 'http://cpc.tb.cx/'
-};
+
 
 // Initialisation des variables
 function install(){
-  ls.accesUrl = ls.accesUrl || usercpUrl['cpc'];
+  ls.accesUrl = ls.accesUrl || 'http://forum.canardpc.com/';
   ls.update = ls.update || 5;
   ls.popup = ls.popup || 1;
   ls.bookmarksEnabled = ls.bookmarksEnabled || 1;
