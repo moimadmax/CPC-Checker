@@ -227,7 +227,7 @@ function displayAddToBookmarks(){
   chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
     var divAddToBookmarks = document.getElementById('addToBookmarks');
     var titre = createElm('H3', 'Ajouter/Enlever la page courante');
-    var siteMatch = /^(?:http:\/\/)(?:forum.canardpc.com|cpc.tb.cx)\/threads\/(?:.*)/i;
+    var siteMatch = /^https?:\/\/forum.canardpc.com\/threads\/(?:.*)/i;
     var titleMatch = / - Page [0-9]+/i;
     if(siteMatch.test(tab[0].url)){
       var title = tab[0].title.replace(titleMatch, '');
