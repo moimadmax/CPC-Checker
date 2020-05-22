@@ -30,6 +30,15 @@
     localStorage.bookmarksContent = document.getElementById('bookmarksContent').value;
     document.getElementById('bmTestResult').innerHTML = "Sauvegardé";
   });
+  // Sauvegarde synchro si on active la synchro.
+  document.getElementById('bookmarksSync1').addEventListener('click',function(e){
+    chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+        // Notify that we saved.
+        console.log('Bookmarks saved to cloud');
+      });
+  });
+
+
 
   // connecte au background afin de rafraichir la config quand on ferme les options.
   var port = chrome.runtime.connect({name: 'option'});
