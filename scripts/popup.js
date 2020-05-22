@@ -18,6 +18,7 @@ var title = document.createElement('h1');
 title.innerHTML = '<a href="' + ls.accesUrl + 'usercp.php" target="_blank" title="Lien vers le tableau de bord">Tableau de bord</a>';
 var linksTitle = createElm('h2', 'Nouveautés');
 var bookmarksTitle = createElm('h2', 'Favoris');
+var bookmarksTitleSync = createElm('h2', 'Favoris \u21cb');
 var searchTitle = createElm('h2', 'Recherche');
 
 // Bouton Refresh
@@ -79,8 +80,12 @@ function init(){
 
   if(ls.bookmarksEnabled == 1){
     favoris.load();
-    // Affiche le titre des favoris
-    divBookmarksTitle.appendChild(bookmarksTitle);
+    // Affiche le titre des favoris en fonction de la synchro
+    if(ls.bookmarksSync == 1){
+      divBookmarksTitle.appendChild(bookmarksTitleSync);
+    } else {
+      divBookmarksTitle.appendChild(bookmarksTitle);
+    }
     displayBookmarks();
     displayAddToBookmarks();
   }

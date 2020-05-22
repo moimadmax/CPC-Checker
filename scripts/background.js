@@ -5,10 +5,11 @@ var readAllHash;
 
 // Initialisation des variables
 function install(){
-  ls.accesUrl = ls.accesUrl || 'http://forum.canardpc.com/';
+  ls.accesUrl = ls.accesUrl || 'https://forum.canardpc.com/';
   ls.update = ls.update || 5;
   ls.popup = ls.popup || 1;
   ls.bookmarksEnabled = ls.bookmarksEnabled || 1;
+  ls.bookmarksSync = ls.bookmarksSync || 0;
   ls.searchEnabled = ls.searchEnabled || 1;
   ls.cache = ls.cache || '';
   ls.bookmarksContent = ls.bookmarksContent || '{"bookmarks":[], "lastUpdated":0}';
@@ -27,6 +28,19 @@ function init(){
   } else {
     chrome.browserAction.setPopup({popup: ""});
     chrome.browserAction.onClicked.addListener(goToUsercp);
+  }
+  if(ls.bookmarksSync == 1){
+    // Si les favoris changent
+    chrome.storage.onChanged.addListener(function(changes, namespace) {
+      try {
+        var remote = JSON.parse(changes['bookmarks'].newValue);
+        var local = JSON.parse(ls.bookmarksContent);
+        if(remote.lastUpdated > local.lastUpdated){
+          ls.bookmarksContent = changes['bookmarks'].newValue;
+          console.log('Bookmarks changed on cloud');
+        }
+      } catch (e) {}
+    });
   }
   refreshCounter();
 }
@@ -243,8 +257,8 @@ chrome.runtime.onConnect.addListener(function(port) {
     port.postMessage({hideIgnoredPost:ls.hideIgnoredPost});
   }
  });
+
 //
 // Là ou tout commence.
 //
-
 window.addEventListener('DOMContentLoaded', init, false);

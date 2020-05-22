@@ -84,12 +84,30 @@ var favoris = {
   // Sauvegarde dans le local Storage
   save:function(){
     localStorage.bookmarksContent = JSON.stringify(this.db);
+    if(localStorage.bookmarksSync == 1 && localStorage.bookmarksContent){
+      chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+        // Notify that we saved.
+        console.log('Bookmarks saved to cloud');
+      });
+    }
   },
   
   // Restaure du local Storage
   load:function(){
+    if(localStorage.bookmarksSync == 1){
+      chrome.storage.local.get(['bookmarks'], function(result) {
+        try {
+          var remote = JSON.parse(result.bookmarks);
+          var local = JSON.parse(localStorage.bookmarksContent);
+          if(remote.lastUpdated > local.lastUpdated){
+            localStorage.bookmarksContent = result.bookmarks;
+            console.log('Bookmarks restored from cloud');
+          }
+        } catch (e) {}
+      });
+    }
     if(localStorage.bookmarksContent){
       this.db = JSON.parse(localStorage.bookmarksContent);
     }
-  },
+  }
 }

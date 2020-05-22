@@ -18,3 +18,4 @@ Cette extension:
 # Autorisations :
 - Alarms : Utilisé afin de rafraichir l'extension toutes les x minutes
 - Tabs : Utilisé pour connaitre au dessus de quel onglet actif s'ouvre le popup pour le système de favoris.
+- Storage : Synchronisation des réglages
