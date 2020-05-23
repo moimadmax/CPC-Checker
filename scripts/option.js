@@ -32,9 +32,26 @@
   });
   // Sauvegarde synchro si on active la synchro.
   document.getElementById('bookmarksSync1').addEventListener('click',function(e){
-    chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
-        // Notify that we saved.
-        console.log('Bookmarks saved to cloud');
+    chrome.storage.local.get(['bookmarks'], function(result) {
+        try {
+          var remote = JSON.parse(result.bookmarks);
+          var local = JSON.parse(localStorage.bookmarksContent);
+          if(remote.lastUpdated > local.lastUpdated){
+            localStorage.bookmarksContent = result.bookmarks;
+            console.log('Bookmarks restored from cloud');
+          } else {
+            chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+                // Notify that we saved.
+                console.log('Bookmarks saved to cloud');
+            });
+          }
+        } catch (e) {
+          // La version en ligne n'est pas correct
+             chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+                // Notify that we saved.
+                console.log('Bookmarks saved to cloud');
+            });
+        }
       });
   });
 

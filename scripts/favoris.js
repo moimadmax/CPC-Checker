@@ -103,7 +103,9 @@ var favoris = {
             localStorage.bookmarksContent = result.bookmarks;
             console.log('Bookmarks restored from cloud');
           }
-        } catch (e) {}
+        } catch (e) {
+          // La version en ligne n'est pas correct
+        }
       });
     }
     if(localStorage.bookmarksContent){
