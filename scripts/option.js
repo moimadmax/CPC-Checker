@@ -1,21 +1,25 @@
-﻿function init(){
+﻿const ls = chrome.storage.local;
+let settings;
+
+function init(){
+  
   // ajout des listener sur le menu
   var menuItems = document.querySelectorAll('#tabs-menu li');
   for (var i = 0, menuItem; menuItem = menuItems[i]; i++) {
     menuItem.addEventListener('click', showGroup);
   }
-  initPref()
+  //initPref()
 
   // Etiquette du Slider de durée de rafraichissement.
-  document.getElementById('updMin').innerHTML = localStorage.update;
-  document.getElementById('update').addEventListener('change',function(e){
+  document.getElementById('updMin').innerHTML = settings.update;
+  document.getElementById('update').addEventListener('input',function(e){
     document.getElementById('updMin').innerHTML = e.currentTarget.value;
   }, false);
 
   // Gestion des Bookmarks
   document.getElementById('saveBookmark').disabled = true;
   var test = document.getElementById('bookmarksContent');
-  document.getElementById('bookmarksContent').value = localStorage.bookmarksContent;
+  document.getElementById('bookmarksContent').value = settings.bookmarksContent;
   document.getElementById('bookmarksContent').addEventListener('change',function(e){
     if(IsJson(document.getElementById('bookmarksContent').value)){
       document.getElementById('bmTestResult').innerHTML = "Valide";
@@ -27,7 +31,7 @@
 
   }, false);
   document.getElementById('saveBookmark').addEventListener('click',function(e){
-    localStorage.bookmarksContent = document.getElementById('bookmarksContent').value;
+    settings.bookmarksContent = document.getElementById('bookmarksContent').value;
     document.getElementById('bmTestResult').innerHTML = "Sauvegardé";
   });
   // Sauvegarde synchro si on active la synchro.
@@ -35,19 +39,19 @@
     chrome.storage.local.get(['bookmarks'], function(result) {
         try {
           var remote = JSON.parse(result.bookmarks);
-          var local = JSON.parse(localStorage.bookmarksContent);
+          var local = JSON.parse(settings.bookmarksContent);
           if(remote.lastUpdated > local.lastUpdated){
-            localStorage.bookmarksContent = result.bookmarks;
+            settings.bookmarksContent = result.bookmarks;
             console.log('Bookmarks restored from cloud');
           } else {
-            chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+            chrome.storage.sync.set({'bookmarks': settings.bookmarksContent}, function() {
                 // Notify that we saved.
                 console.log('Bookmarks saved to cloud');
             });
           }
         } catch (e) {
           // La version en ligne n'est pas correct
-             chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+             chrome.storage.sync.set({'bookmarks': settings.bookmarksContent}, function() {
                 // Notify that we saved.
                 console.log('Bookmarks saved to cloud');
             });
@@ -92,10 +96,6 @@ function IsJson(str) {
 // Fonction d'ecoute et modification des réglages
 function initPref()
 {
-
-    // storage
-    var storage = localStorage;
-
     // glue for multiple values ( checkbox, select-multiple )
     var glue    = '\n';
 
@@ -172,17 +172,18 @@ function initPref()
         ).join( glue );
 
         // set value
-        storage.setItem( name, value );
+        settings[name] = value;
+        ls.set({ 'settings': settings });
     }
 
 
-    // walk and set the elements accordingly to the storage
+    // walk and set the elements accordingly to the settings
     walkElements
     (
         function( element, name, type )
         {
-            var value       = storage[name]!==undefined?storage.getItem( name ):element.value;
-            var valueHash   = hash( value, glue );
+            var value       = settings[name]!==undefined?settings[name]:element.value;
+            var valueHash   = hash( value.toString(), glue );
 
             if( element.selectedOptions )
             {
@@ -206,7 +207,7 @@ function initPref()
 
             // set the widget.preferences to the value of the element if it was undefined
             // YOU MAY NOT WANT TO DO THIS
-            if( storage[name]==undefined )
+            if( settings[name]==undefined )
             {
                 changedElement( element );
             }
@@ -219,4 +220,16 @@ function initPref()
 }
 
 // Commencement
-window.addEventListener('DOMContentLoaded', init, false);
+function loadDatas(){
+  ls.get(['settings'], function(data) {
+    if(data.settings){
+      settings = data.settings;
+      init();
+      initPref();
+    }
+  });
+}
+window.addEventListener('DOMContentLoaded', loadDatas, false);
+//window.addEventListener("beforeunload", function(e){
+//  ls.set({ 'settings': settings });
+//});

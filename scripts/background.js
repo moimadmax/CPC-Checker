@@ -1,87 +1,89 @@
-﻿var ls = localStorage;
-var requestTimeout = 1000 * 6;
-var readAllHash;
+﻿import {bouton} from './bouton.js';
 
+const ls = chrome.storage.local;
+const ss = chrome.storage.session;
+
+let settings = { accesUrl: '', update: '', popup: '', bookmarksEnabled: '', bookmarksSync: '', searchEnabled: '', bookmarksContent: '', hideIgnoredPost: '' } ;
+let session = { cache: '', nbThread: 0, nbMsg: 0,readAllHash: '' };
+let initialised = false;
 
 // Initialisation des variables
 function install(){
-  ls.accesUrl = ls.accesUrl || 'https://forum.canardpc.com/';
-  ls.update = ls.update || 5;
-  ls.popup = ls.popup || 1;
-  ls.bookmarksEnabled = ls.bookmarksEnabled || 1;
-  ls.bookmarksSync = ls.bookmarksSync || 0;
-  ls.searchEnabled = ls.searchEnabled || 1;
-  ls.cache = ls.cache || '';
-  ls.bookmarksContent = ls.bookmarksContent || '{"bookmarks":[], "lastUpdated":0}';
-  ls.persistentStorage = ls.persistentStorage || '{}';
-  ls.hideIgnoredPost = ls.hideIgnoredPost || '';
-
+  settings.accesUrl = 'https://forum.canardpc.com/';
+  settings.update = '5';
+  settings.popup = '1';
+  settings.bookmarksEnabled = '1';
+  settings.bookmarksSync = '0';
+  settings.searchEnabled = '1';
+  settings.bookmarksContent = '{"bookmarks":[], "lastUpdated":0}';
+  settings.hideIgnoredPost = '';
+  ls.set({ 'settings': settings });
 }
+
 
 // Initialisation de l'extension
 function init(){
-  install();
-  chrome.alarms.create('refresh', {periodInMinutes: parseInt(ls.update, 10)});
-  if(ls.popup === '1'){
-    chrome.browserAction.setPopup({popup: "popup.html"});
-    chrome.browserAction.onClicked.removeListener(goToUsercp);
+  chrome.alarms.create('refresh', {periodInMinutes: parseInt(settings.update, 10)});
+  if(settings.popup == '1'){
+    chrome.action.setPopup({popup: "popup.html"});
+    chrome.action.onClicked.removeListener(goToUsercp);
   } else {
-    chrome.browserAction.setPopup({popup: ""});
-    chrome.browserAction.onClicked.addListener(goToUsercp);
+    chrome.action.setPopup({popup: ""});
+    chrome.action.onClicked.addListener(goToUsercp);
   }
-  if(ls.bookmarksSync == 1){
+  if(settings.bookmarksSync == '1'){
     // Si les favoris changent
     chrome.storage.onChanged.addListener(function(changes, namespace) {
       try {
-        var remote = JSON.parse(changes['bookmarks'].newValue);
-        var local = JSON.parse(ls.bookmarksContent);
+        let remote = JSON.parse(changes['bookmarks'].newValue);
+        let local = JSON.parse(settings.bookmarksContent);
         if(remote.lastUpdated > local.lastUpdated){
-          ls.bookmarksContent = changes['bookmarks'].newValue;
+          settings.bookmarksContent = changes['bookmarks'].newValue;
           console.log('Bookmarks changed on cloud');
+          ls.set({ 'settings': settings });
         }
       } catch (e) {}
     });
   }
+  initialised = true;
   refreshCounter();
 }
 
 // Ouvre le control panel dans un nouvel onglet
 function goToUsercp(){
-  chrome.tabs.query({url: ls.accesUrl + "usercp.php*"}, function(tabs) {
+  chrome.tabs.query({url: settings.accesUrl + "usercp.php*"}, function(tabs) {
     if(tabs.length){
         chrome.tabs.reload(tabs[0].id);
         chrome.tabs.update(tabs[0].id, {active: true});
     } else {
-      chrome.tabs.create({url: ls.accesUrl + 'usercp.php'});
+      chrome.tabs.create({url: settings.accesUrl + 'usercp.php'});
     }
   });
 }
 
 // Déclenchement periodique
 function onAlarm(){
-  refreshCounter();
+  loadDatas(function(){
+    refreshCounter();
+  });
+  
 }
 
 // Récupère la page et rafraichi le bouton
-function refreshCounter(wait) {
-  var xhr = new XMLHttpRequest();
-  var abortTimerId = window.setTimeout(function() {
-    xhr.abort();  // synchronously calls onreadystatechange
-  }, requestTimeout);
+function refreshCounter(callback) {
   function handleSuccess(page) {
-    window.clearTimeout(abortTimerId);
 
     // Extrait le nombre de Thread non lu
     function parseNbThread(string){
-      var pattern=/(?:messages\:|Posts\:) \(([0-9]+)\)/;
+      let pattern=/(?:messages\:|Posts\:) \(([0-9]+)\)/;
       return parseInt(string.match(pattern)[1], 10);
     }
 
     // Extrait le nombre de message non lu
     function parseNbMsg(string){
-      var toReturn = 0;
-      var pattern=/(?:messages privés|Private Messages)<\/a> \(([0-9]+)\)/;
-      var result = string.match(pattern);
+      let toReturn = 0;
+      let pattern=/(?:messages privés|Private Messages)<\/a> \(([0-9]+)\)/;
+      let result = string.match(pattern);
       if(result){
         toReturn = parseInt(result[1], 10);
       }
@@ -103,53 +105,50 @@ function refreshCounter(wait) {
 
     // Crée le texte de l'infobulle en fonction du nombre de messages
     function makeTitle(nbMsg, nbThread){
-      var output = "";
+      let output = "";
       if(nbMsg) { output = nbMsg + " message(s)" ;}
       if(output && nbThread)  { output += ", ";}
       if(nbThread) { output += nbThread + " discussion(s)";}
       if(output == "") {output = "Rien, Nada ...";}
       return output;
     }
-    var nbThread = parseNbThread(page);
-    var nbMsg = parseNbMsg(page);
-    ps.set('nbThread', nbThread);
-    ps.set('nbMsg', nbMsg);
+    let nbThread = parseNbThread(page);
+    let nbMsg = parseNbMsg(page);
     bouton.update(quelIcone(nbMsg + nbThread), nbThread, nbMsg, makeTitle(nbMsg, nbThread));
+    session.nbThread = nbThread;
+    session.nbMsg = nbMsg;
+    ss.set({ 'session': session });
+    if (callback) callback();
   }
 
   function handleError(error) {
-    window.clearTimeout(abortTimerId);
-    bouton.update(1, ps.get('nbThread'), ps.get('nbMsg'), error);
+    bouton.update(1, session.nbThread, session.nbMsg, error);
   }
 
   try {
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState != 4)
-        return;
-
-      if (xhr.responseText && xhr.status == 200) {
-        var html = xhr.responseText;
-        var debut = html.indexOf('<div class="cp_content">');
-        if(debut !== -1){ // Si loggé sur le forum
-          var fin = html.indexOf('<!-- ############## END SUBSCRIBED THREADS ##############  -->');
-          readAllHash = /markreadhash=([^"]+)/gmi.exec(html)[1];
-          ls.cache = html.substring(debut, fin);
-          handleSuccess(ls.cache);
-        } else { // Si pas loggé
-          handleError("Non connecté");
+    if(settings.accesUrl == '') {console.error("défaut data");}    
+    fetch(settings.accesUrl + "usercp.php")
+      .then(function (response) {
+        if (response.ok) {
+          response.text()
+            .then(function(text){
+            let html = text;
+            let debut = html.indexOf('<div class="cp_content">');
+            if(debut !== -1){ // Si loggé sur le forum
+              let fin = html.indexOf('<!-- ############## END SUBSCRIBED THREADS ##############  -->');
+              session.readAllHash = /markreadhash=([^"]+)/gmi.exec(html)[1];
+              session.cache = html.substring(debut, fin);
+              handleSuccess(session.cache);
+            } else { // Si pas loggé
+              handleError("Non connecté");
+            }
+          });
+        } else {
+          handleError("Erreur Réseau");
+          console.error("Fetch Error");
         }
-      } else {
-        handleError("Erreur Réseau");
-      }
-    };
+      });
 
-    xhr.onerror = function(error) {
-      handleError("Erreur Réseau");
-      console.error("Xhr Error");
-    };
-
-    xhr.open("GET", ls.accesUrl + "usercp.php", !wait);
-    xhr.send(null);
   } catch(e) {
     handleError("Erreur Réseau");
     console.error("Refresh Exception Error");
@@ -158,58 +157,32 @@ function refreshCounter(wait) {
 
 // Extrait les liens pour le popup
 function extractLinks(page, quantity){
-  var parseMessage = /<a href="(private.php\?do[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
-  var parseMsgVisit = /<a class="title" href="(members\/[^"]+?tab=visitor_messaging#visitor_messaging)[^>]+>([^<>]+)<\/a>/gmi;
-  var parseThread = /<a class="title [^"]+"[ ]+href="(threads[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
-  var result, pos;
-  var messages = [];
-  var threads = [];
-
-  function htmlDecode(input){
-    var e = document.createElement('div');
-    e.innerHTML = input;
-    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-  }
+  let parseMessage = /<a href="(private.php\?do[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
+  let parseMsgVisit = /<a class="title" href="(members\/[^"]+?tab=visitor_messaging#visitor_messaging)[^>]+>([^<>]+)<\/a>/gmi;
+  let parseThread = /<a class="title [^"]+"[ ]+href="(threads[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
+  let result, pos;
+  let messages = [];
+  let threads = [];
 
   // Récupération des messages
   while ((result = parseMessage.exec(page))) {
-    messages.push({url:ls.accesUrl + htmlDecode(result[1]), text:htmlDecode(result[2])});
+    messages.push({url:settings.accesUrl + result[1], text:result[2]});
     parseMsgVisit.lastIndex = parseMessage.lastIndex;
   }
 
   // Récupération des messages visiteurs
   while ((result = parseMsgVisit.exec(page))) {
-    messages.push({url:ls.accesUrl + htmlDecode(result[1]), text:htmlDecode(result[2])});
+    messages.push({url:settings.accesUrl + result[1], text:result[2]});
     parseThread.lastIndex = parseMsgVisit.lastIndex;
   }
 
   // Récupération des Threads
   while ((result = parseThread.exec(page))) {
-    threads.push({url:ls.accesUrl + htmlDecode(result[1]) + '?goto=newpost', text:htmlDecode(result[2])});
+    threads.push({url:settings.accesUrl + result[1] + '?goto=newpost', text:result[2]});
   }
-  return {messages:messages, threads:threads, quantity:quantity, readAllHash:readAllHash};
+  return {messages:messages, threads:threads, quantity:quantity, readAllHash:session.readAllHash};
 }
 
-// Persistant storage
-var ps = {
-  db: {},
-  set: function(key, value){
-    if(!this.db[key]){
-      try{
-        this.db = JSON.parse(ls.persistentStorage);
-      }catch(e){}
-    }
-    this.db[key] = value;
-    ls.persistentStorage = JSON.stringify(this.db);
-  },
-
-  get: function(key){
-    if(!this.db[key]){
-      this.db = JSON.parse(ls.persistentStorage);
-    }
-    return this.db[key];
-  }
-}
 
 //
 // Déclaration des évenements
@@ -231,34 +204,65 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
 // Alarme déclencheuse de refresh
 chrome.alarms.onAlarm.addListener(onAlarm);
+
+// Connection d'un element externe
 chrome.runtime.onConnect.addListener(function(port) {
-  if(port.name == 'popup'){
-    port.onDisconnect.addListener(function(){
-      setTimeout(refreshCounter,  3 * 1000);
-    });
-    port.onMessage.addListener(function(request) {
-      switch(request.action){
-        case 'PopupOpen':
-          port.postMessage(extractLinks(ls.cache, {nbThread:ps.get('nbThread'), nbMsg:ps.get('nbMsg')}));
-          break;
-        case 'PopupRefresh':
-          refreshCounter(true);
-          port.postMessage(extractLinks(ls.cache, {nbThread:ps.get('nbThread'), nbMsg:ps.get('nbMsg')}));
-          break;
-      }
-    });
-  }
-  if(port.name == 'option'){
-    port.onDisconnect.addListener(function(){
-      init();
-    });
-  }
-  if(port.name == 'contentScript'){
-    port.postMessage({hideIgnoredPost:ls.hideIgnoredPost});
-  }
+  loadDatas(function (){
+    if(port.name == 'popup'){
+      port.onDisconnect.addListener(function(){
+        setTimeout(refreshCounter,  3 * 1000);
+      });
+      port.onMessage.addListener(function(request) {
+        switch(request.action){
+          case 'PopupOpen':
+            port.postMessage(extractLinks(session.cache, {nbThread:session.nbThread, nbMsg:session.nbMsg}));
+            break;
+          case 'PopupRefresh':
+            refreshCounter(function(){
+              port.postMessage(extractLinks(session.cache, {nbThread:session.nbThread, nbMsg:session.nbMsg}));
+            });
+            break;
+        }
+      });
+    }
+    if(port.name == 'option'){
+      port.onDisconnect.addListener(function(){
+        ls.get(['settings'], function(data) {
+          if(data.settings){
+            settings = data.settings;
+            init();
+          }
+        });
+      });
+    }
+    if(port.name == 'contentScript'){
+      port.postMessage({hideIgnoredPost:settings.hideIgnoredPost});
+    }
+  });
  });
 
 //
 // Là ou tout commence.
 //
-window.addEventListener('DOMContentLoaded', init, false);
+function loadDatas(callback){
+  if(settings.accesUrl == ''){
+    ls.get(['settings'], function(data) {
+      if(data.settings){
+        settings = data.settings;
+        ss.get(['session'], function(data){
+          if(data.session){
+            session = data.session;
+          }
+        });
+        if(!initialised) {init();}
+        if (callback) callback();
+      } else {
+        install();
+        init();
+      }
+    });
+  }else{
+    if (callback) callback();
+  }
+}
+loadDatas();

@@ -1,9 +1,14 @@
 ﻿{
-  "manifest_version" : 2,
+  "manifest_version" : 3,
 
   "name": "CPC Checker",
-  "version" : "3.7",
+  "version" : "4.0",
   "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC.",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+
 
   "icons": {
     "16": "images/icon16.png",
@@ -12,8 +17,8 @@
   },
 
   "background": {
-    "page": "background.html",
-    "persistent": false
+    "service_worker": "scripts/background.js",
+    "type": "module"
   },
 
   "content_scripts": [
@@ -25,8 +30,7 @@
     }
   ],
 
-
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "images/badge19/snif.png",
       "38": "images/badge38/snif.png"
@@ -35,17 +39,15 @@
     "default_popup": "popup.html"
   },
 
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": false
-  },
-
-  "permissions" : [
+  "host_permissions": [
     "http://forum.canardpc.com/*",
     "https://forum.canardpc.com/*",
     "https://duckduckgo.com/*",
     "https://www.qwant.com/*",
-    "https://www.google.fr/*",
+    "https://www.google.fr/*"
+  ],
+
+  "permissions" : [
     "alarms",
     "tabs",
     "storage"

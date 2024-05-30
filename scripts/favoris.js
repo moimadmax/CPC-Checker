@@ -10,10 +10,9 @@
 
 */
 
-
 var favoris = {
   db:{ bookmarks:[], lastUpdated:0},
-  
+
   // Ajoute ou met à jour       
   add:function(url, title, name){
     if(!name){
@@ -83,9 +82,10 @@ var favoris = {
 
   // Sauvegarde dans le local Storage
   save:function(){
-    localStorage.bookmarksContent = JSON.stringify(this.db);
-    if(localStorage.bookmarksSync == 1 && localStorage.bookmarksContent){
-      chrome.storage.sync.set({'bookmarks': localStorage.bookmarksContent}, function() {
+    settings.bookmarksContent = JSON.stringify(this.db);
+    ls.set({ 'settings': settings });
+    if(settings.bookmarksSync == '1' && settings.bookmarksContent){
+      chrome.storage.sync.set({'bookmarks': settings.bookmarksContent}, function() {
         // Notify that we saved.
         console.log('Bookmarks saved to cloud');
       });
@@ -94,13 +94,13 @@ var favoris = {
   
   // Restaure du local Storage
   load:function(){
-    if(localStorage.bookmarksSync == 1){
+    if(settings.bookmarksSync == '1'){
       chrome.storage.local.get(['bookmarks'], function(result) {
         try {
           var remote = JSON.parse(result.bookmarks);
-          var local = JSON.parse(localStorage.bookmarksContent);
+          var local = JSON.parse(settings.bookmarksContent);
           if(remote.lastUpdated > local.lastUpdated){
-            localStorage.bookmarksContent = result.bookmarks;
+            settings.bookmarksContent = result.bookmarks;
             console.log('Bookmarks restored from cloud');
           }
         } catch (e) {
@@ -108,8 +108,8 @@ var favoris = {
         }
       });
     }
-    if(localStorage.bookmarksContent){
-      this.db = JSON.parse(localStorage.bookmarksContent);
+    if(settings.bookmarksContent){
+      this.db = JSON.parse(settings.bookmarksContent);
     }
   }
 }

@@ -14,8 +14,11 @@ Cette extension:
 - Permet de garder à portée de clic vos discussions préférées.
 - Offre un champ de recherche direct avec les moteurs DuckDuckGo, Qwant et Google au choix.
 - Permet de masquer les posts des utilisateurs ignorés.
+- Permet la synchronisation des favoris entre vos navigateurs.
 
 # Autorisations :
 - Alarms : Utilisé afin de rafraichir l'extension toutes les x minutes
 - Tabs : Utilisé pour connaitre au dessus de quel onglet actif s'ouvre le popup pour le système de favoris.
-- Storage : Synchronisation des favoris.
+- Storage.Sync : Synchronisation des favoris.
+- Storage.Local : Sauvegarde des réglages.
+- Storage.Session : Cache.
