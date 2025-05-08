@@ -2,7 +2,7 @@
   "manifest_version" : 3,
 
   "name": "CPC Checker",
-  "version" : "4.0",
+  "version" : "5.0",
   "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC.",
   "options_ui": {
     "page": "options.html",

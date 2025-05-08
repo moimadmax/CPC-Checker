@@ -2,6 +2,7 @@
   db {
     bookmarks[] {
       id : integer
+      url : string
       title : string
       name : string
     }
@@ -16,18 +17,21 @@ var favoris = {
   // Ajoute ou met à jour       
   add:function(url, title, name){
     if(!name){
-      name = this.createName(url);
+      name = this.createName(title);
     }
+    let accessUrlMatch = /https?:\/\/forum.canardpc.com\//gi;
     var i = this.indexOf(url);
     if(i == -1){ // L'entrée n'existe pas.
       this.db.bookmarks.push({
         id: this.getId(url),
+        path: url.replace(accessUrlMatch, ''),
         title: title,
         name: name
       });
     } else { // L'entrée existe, on met à jour.
       this.db.bookmarks[i]({
         id: this.getId(url),
+        path: url.replace(accessUrlMatch, ''),
         title: title,
         name: name
       });
@@ -46,7 +50,7 @@ var favoris = {
 
   // Extrait l'id du lien
   getId:function(url){
-    var regex = /\/threads\/([0-9]+)/gi;
+    var regex = /\/([0-9]+)/gi;
     if(result = regex.exec(url)) {
       return parseInt(result[1] ,10);
     } 
@@ -54,12 +58,11 @@ var favoris = {
   },
 
   // Crée un nom unique 
-  createName:function(url){
-    url = decodeURIComponent(url);
-    var regex =/(?:-([^-\/?]+))/g; 
+  createName:function(title){
+    var regex =/(?:([^\W]+))/g; 
     var ret = '';
     var fallback = '';
-    while(result = regex.exec(url)) {
+    while(result = regex.exec(title)) {
       ret += result[1][0];
       fallback = result[1];
     } 

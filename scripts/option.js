@@ -32,6 +32,7 @@ function init(){
   }, false);
   document.getElementById('saveBookmark').addEventListener('click',function(e){
     settings.bookmarksContent = document.getElementById('bookmarksContent').value;
+    ls.set({ 'settings': settings });
     document.getElementById('bmTestResult').innerHTML = "Sauvegardé";
   });
   // Sauvegarde synchro si on active la synchro.

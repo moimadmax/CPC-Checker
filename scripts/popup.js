@@ -24,7 +24,6 @@ let loading;
 let bpOpenAll;
 let bpOpenMsgs;
 let bpOpenThreads;
-let bpMarkAllRead;
 
 function init(){
   //
@@ -33,7 +32,7 @@ function init(){
 
   // Titres
   let title = document.createElement('h1');
-  title.innerHTML = '<a href="' + settings.accesUrl + 'usercp.php" target="_blank" title="Lien vers le tableau de bord">Tableau de bord</a>';
+  title.innerHTML = '<a href="' + settings.accesUrl + 'messagecenter/index" target="_blank" title="Lien vers le tableau de bord">Tableau de bord</a>';
   let linksTitle = createElm('h2', 'Nouveautés');
   let bookmarksTitle = createElm('h2', 'Favoris');
   let bookmarksTitleSync = createElm('h2', 'Favoris \u21cb');
@@ -69,12 +68,6 @@ function init(){
   bpOpenThreads.type = 'button';
   bpOpenThreads.value = 'Ouvrir discussions';
   bpOpenThreads.addEventListener('click', function(){openThreads();}, false);
-
-  bpMarkAllRead = document.createElement('input');
-  bpMarkAllRead.name = 'bpMarkAllRead';
-  bpMarkAllRead.type = 'button';
-  bpMarkAllRead.value = 'Marquer les forums comme lus';
-  bpMarkAllRead.addEventListener('click', function(){markAllRead();}, false);
 
  //Récupere les divs
   divTitle = document.getElementById('title');
@@ -146,7 +139,6 @@ function dataReceived(response) {
   if(datas.threads.length){
     divBpPanel.appendChild(bpOpenThreads);
   }
-  divBpPanel.appendChild(bpMarkAllRead);
 }
 
 
@@ -176,19 +168,13 @@ function openThreads(){
   };
 }
 
-function markAllRead(){
-  if(confirm('Êtes-vous sûr de vouloir marquer tous les forums comme lus, cette action est irréversible.') == true){
-    chrome.tabs.create({url: settings.accesUrl + 'forumdisplay.php?do=markread&markreadhash=' + datas.readAllHash })
-  }
-}
-
 function addLinks(data){
   let links = document.createElement('div');
   if(data.messages.length){
     links.appendChild(createElm('h3', 'Message(s) privé(s) : ' + data.quantity.nbMsg));
     links.appendChild(createLinks(data.messages));
     if(data.messages.length < data.quantity.nbMsg){
-      links.appendChild(createElm('a', 'Tous les messages ne sont pas visible, aller aux messages.', settings.accesUrl + 'private.php' ))
+      links.appendChild(createElm('a', 'Tous les messages ne sont pas visible, aller aux messages.', settings.accesUrl + 'messagecenter/list/' + datas.links[0] + '/1' ))
     }
   }
 
@@ -196,7 +182,7 @@ function addLinks(data){
     links.appendChild(createElm('h3', 'Discussion(s) suivie(s) : ' + data.quantity.nbThread));
     links.appendChild(createLinks(data.threads, true));
     if(data.threads.length < data.quantity.nbThread){
-      links.appendChild(createElm('a', 'Toutes les discussions ne sont pas visible, aller au tableau de bord.', settings.accesUrl + 'usercp.php' ))
+      links.appendChild(createElm('a', 'Toutes les discussions ne sont pas visible, aller au tableau de bord.', settings.accesUrl + 'messagecenter/notification/' + datas.links[1] + '/1' ))
     }
   }
 
@@ -212,13 +198,6 @@ function createLinks(tabLinks, isThread){
   for(let i = 0, l; l = tabLinks[i]; i++){
     li = document.createElement('li');
     link = createElm('a', htmlDecode(l.text), htmlDecode(l.url))
-    if(isThread && settings.bookmarksEnabled == '1'){
-      cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = favoris.indexOf(l.url) != -1 ? true : false;
-      cb.addEventListener('click', function(e){bookmark(e);}, false);
-      li.appendChild(cb);
-    }
     li.appendChild(link);
     ret.appendChild(li);
   }
@@ -246,7 +225,7 @@ function displayBookmarks(){
   for(let i = 0, bm; bm = favoris.db.bookmarks[i]; i++ ){
     let d = document.createElement('div');
     d.className = 'bookmark';
-    let l = createElm('a', bm.name, settings.accesUrl + 'threads/' + parseInt(bm.id, 10) + '?goto=newpost');
+    let l = createElm('a', bm.name, settings.accesUrl + bm.path + '?goto=newpost');
     l.title = bm.title;
     d.appendChild(l);
     divBookmarks.appendChild(d);
@@ -257,11 +236,12 @@ function displayAddToBookmarks(){
   chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
     let divAddToBookmarks = document.getElementById('addToBookmarks');
     let titre = createElm('H3', 'Ajouter/Enlever la page courante');
-    let siteMatch = /^https?:\/\/forum.canardpc.com\/threads\/(?:.*)/i;
-    let titleMatch = / - Page [0-9]+/i;
+    let siteMatch = /^https?:\/\/forum.canardpc.com\/forum\/(?:.*)/i;
+    let titleMatch = / - Canardpc\.com$/gi;
     if(siteMatch.test(tab[0].url)){
       let title = tab[0].title.replace(titleMatch, '');
       let link = createElm('a', title, tab[0].url)
+      link.addEventListener('click', function(e){bookmark(e);}, false);
       cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.checked = favoris.indexOf(tab[0].url) != -1 ? true : false;

@@ -4,7 +4,7 @@ const ls = chrome.storage.local;
 const ss = chrome.storage.session;
 
 let settings = { accesUrl: '', update: '', popup: '', bookmarksEnabled: '', bookmarksSync: '', searchEnabled: '', bookmarksContent: '', hideIgnoredPost: '' } ;
-let session = { cache: '', nbThread: 0, nbMsg: 0,readAllHash: '' };
+let session = { cache: '', nbThread: 0, nbMsg: 0, links:[] };
 let initialised = false;
 
 // Initialisation des variables
@@ -51,12 +51,12 @@ function init(){
 
 // Ouvre le control panel dans un nouvel onglet
 function goToUsercp(){
-  chrome.tabs.query({url: settings.accesUrl + "usercp.php*"}, function(tabs) {
+  chrome.tabs.query({url: settings.accesUrl + "messagecenter/index*"}, function(tabs) {
     if(tabs.length){
         chrome.tabs.reload(tabs[0].id);
         chrome.tabs.update(tabs[0].id, {active: true});
     } else {
-      chrome.tabs.create({url: settings.accesUrl + 'usercp.php'});
+      chrome.tabs.create({url: settings.accesUrl + 'messagecenter/index'});
     }
   });
 }
@@ -75,22 +75,17 @@ function refreshCounter(callback) {
 
     // Extrait le nombre de Thread non lu
     function parseNbThread(string){
-      let pattern=/(?:messages\:|Posts\:) \(([0-9]+)\)/;
+      let pattern=/<!--Notifications-->[^!]*?<span class="pm-folder-count js-notifications-folder-count" title="([0-9]+)"/;
       return parseInt(string.match(pattern)[1], 10);
     }
 
     // Extrait le nombre de message non lu
     function parseNbMsg(string){
       let toReturn = 0;
-      let pattern=/(?:messages privés|Private Messages)<\/a> \(([0-9]+)\)/;
+      let pattern=/<!--Messages-->[^!]*?<span class="pm-folder-count" title="([0-9]+)">/;
       let result = string.match(pattern);
       if(result){
         toReturn = parseInt(result[1], 10);
-      }
-      pattern=/(?:Nouveaux messages visiteur|New Visitor Messages)<\/a> \(([0-9]+)\)/;
-      result = string.match(pattern);
-      if(result){
-        toReturn += parseInt(result[1], 10);
       }
       return toReturn;
     }
@@ -127,17 +122,18 @@ function refreshCounter(callback) {
 
   try {
     if(settings.accesUrl == '') {console.error("défaut data");}    
-    fetch(settings.accesUrl + "usercp.php")
+    fetch(settings.accesUrl + "messagecenter/index")
       .then(function (response) {
         if (response.ok) {
           response.text()
             .then(function(text){
             let html = text;
-            let debut = html.indexOf('<div class="cp_content">');
+            let debut = html.indexOf('privateMessageNavContainer');
             if(debut !== -1){ // Si loggé sur le forum
-              let fin = html.indexOf('<!-- ############## END SUBSCRIBED THREADS ##############  -->');
-              session.readAllHash = /markreadhash=([^"]+)/gmi.exec(html)[1];
+              let fin = html.indexOf('<!-- *** END WIDGET widgetid:30, widgetinstanceid:58, template:widget_privatemessage_display *** -->');
               session.cache = html.substring(debut, fin);
+              session.links[0] = /<!--Messages-->[^!]*?\/messagecenter\/list\/([0-9]+)\/1"/.exec(session.cache)[1];
+              session.links[1] = /<!--Notifications-->[^!]*?\/messagecenter\/notification\/([0-9]+)\/1"/.exec(session.cache)[1];
               handleSuccess(session.cache);
             } else { // Si pas loggé
               handleError("Non connecté");
@@ -157,9 +153,8 @@ function refreshCounter(callback) {
 
 // Extrait les liens pour le popup
 function extractLinks(page, quantity){
-  let parseMessage = /<a href="(private.php\?do[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
-  let parseMsgVisit = /<a class="title" href="(members\/[^"]+?tab=visitor_messaging#visitor_messaging)[^>]+>([^<>]+)<\/a>/gmi;
-  let parseThread = /<a class="title [^"]+"[ ]+href="(threads[^"]+)" [^>]+>([^<>]+)<\/a>/gmi;
+  let parseMessage = /<a href="[^"]+\/(messagecenter\/view\/[^"]+)">([^<>]+)<\/a>/gmi;
+  let parseThread = /<a href="[^"]+\/(node\/[0-9]+)"[^>]+>([^<>]+)<\/a>/gmi;
   let result, pos;
   let messages = [];
   let threads = [];
@@ -167,20 +162,14 @@ function extractLinks(page, quantity){
   // Récupération des messages
   while ((result = parseMessage.exec(page))) {
     messages.push({url:settings.accesUrl + result[1], text:result[2]});
-    parseMsgVisit.lastIndex = parseMessage.lastIndex;
-  }
-
-  // Récupération des messages visiteurs
-  while ((result = parseMsgVisit.exec(page))) {
-    messages.push({url:settings.accesUrl + result[1], text:result[2]});
-    parseThread.lastIndex = parseMsgVisit.lastIndex;
+    parseThread.lastIndex  = parseMessage.lastIndex;
   }
 
   // Récupération des Threads
   while ((result = parseThread.exec(page))) {
-    threads.push({url:settings.accesUrl + result[1] + '?goto=newpost', text:result[2]});
+    threads.push({url:settings.accesUrl + result[1], text:result[2]});
   }
-  return {messages:messages, threads:threads, quantity:quantity, readAllHash:session.readAllHash};
+  return {messages:messages, threads:threads, quantity:quantity, links:session.links};
 }
 
 
