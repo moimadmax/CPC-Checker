@@ -2,7 +2,7 @@
   "manifest_version" : 3,
 
   "name": "CPC Checker",
-  "version" : "5.0",
+  "version" : "5.1",
   "description" : "Affiche le nombre de discussions suivies avec nouveaux messages de votre tableau de bord du forum CanardPC.",
   "options_ui": {
     "page": "options.html",
@@ -20,15 +20,6 @@
     "service_worker": "scripts/background.js",
     "type": "module"
   },
-
-  "content_scripts": [
-    {
-      "matches": [
-        "http://forum.canardpc.com/*",
-        "https://forum.canardpc.com/*"],
-      "js": ["scripts/contentScript.js"]
-    }
-  ],
 
   "action": {
     "default_icon": {

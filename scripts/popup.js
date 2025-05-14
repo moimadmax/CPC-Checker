@@ -225,7 +225,7 @@ function displayBookmarks(){
   for(let i = 0, bm; bm = favoris.db.bookmarks[i]; i++ ){
     let d = document.createElement('div');
     d.className = 'bookmark';
-    let l = createElm('a', bm.name, settings.accesUrl + bm.path + '?goto=newpost');
+    let l = createElm('a', bm.name, settings.accesUrl + bm.path);
     l.title = bm.title;
     d.appendChild(l);
     divBookmarks.appendChild(d);

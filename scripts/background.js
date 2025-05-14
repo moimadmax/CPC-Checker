@@ -3,7 +3,7 @@
 const ls = chrome.storage.local;
 const ss = chrome.storage.session;
 
-let settings = { accesUrl: '', update: '', popup: '', bookmarksEnabled: '', bookmarksSync: '', searchEnabled: '', bookmarksContent: '', hideIgnoredPost: '' } ;
+let settings = { accesUrl: '', update: '', popup: '', bookmarksEnabled: '', bookmarksSync: '', searchEnabled: '', bookmarksContent: ''} ;
 let session = { cache: '', nbThread: 0, nbMsg: 0, links:[] };
 let initialised = false;
 
@@ -16,7 +16,6 @@ function install(){
   settings.bookmarksSync = '0';
   settings.searchEnabled = '1';
   settings.bookmarksContent = '{"bookmarks":[], "lastUpdated":0}';
-  settings.hideIgnoredPost = '';
   ls.set({ 'settings': settings });
 }
 
@@ -75,8 +74,13 @@ function refreshCounter(callback) {
 
     // Extrait le nombre de Thread non lu
     function parseNbThread(string){
+      let toReturn = 0;
       let pattern=/<!--Notifications-->[^!]*?<span class="pm-folder-count js-notifications-folder-count" title="([0-9]+)"/;
-      return parseInt(string.match(pattern)[1], 10);
+      let result = string.match(pattern);
+      if(result){
+        toReturn = parseInt(result[1], 10);
+      }
+      return toReturn;
     }
 
     // Extrait le nombre de message non lu
@@ -223,9 +227,6 @@ chrome.runtime.onConnect.addListener(function(port) {
           }
         });
       });
-    }
-    if(port.name == 'contentScript'){
-      port.postMessage({hideIgnoredPost:settings.hideIgnoredPost});
     }
   });
  });

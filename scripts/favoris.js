@@ -19,19 +19,19 @@ var favoris = {
     if(!name){
       name = this.createName(title);
     }
-    let accessUrlMatch = /https?:\/\/forum.canardpc.com\//gi;
+    let getPath = /https?:\/\/forum.canardpc.com\/(.+\/[0-9]+)-/i;
     var i = this.indexOf(url);
     if(i == -1){ // L'entrée n'existe pas.
       this.db.bookmarks.push({
         id: this.getId(url),
-        path: url.replace(accessUrlMatch, ''),
+        path: getPath.exec(url)[1],
         title: title,
         name: name
       });
     } else { // L'entrée existe, on met à jour.
       this.db.bookmarks[i]({
         id: this.getId(url),
-        path: url.replace(accessUrlMatch, ''),
+        path: getPath.exec(url)[1],
         title: title,
         name: name
       });

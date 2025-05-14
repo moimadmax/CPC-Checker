@@ -1,3 +1,9 @@
+v5.1
+ - Correction du plantage lorsqu'il n'y avait plus de discussions non lue
+ - Suppression du contentScript qui permettait de masqué les utilisateurs ignorés
+ - Suppression du ?goto=newpost sur les liens des favoris
+ - Récupération du minimum sur les liens favoris (suppression de la page et du #post)
+
 v5.0
  - Compatibilité Nouveau forum
 
